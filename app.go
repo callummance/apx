@@ -2,11 +2,10 @@ package main
 
 import (
 	"bitbucket.org/callummance/apx/auth"
+	"github.com/callummance/apx-srv/db"
+	"github.com/callummance/apx-srv/handlers/users"
+	"github.com/callummance/apx-srv/middlewares"
 	"github.com/gin-gonic/gin"
-	"https://gitlab.doc.ic.ac.uk/cm3914/apx.git"
-	"https://gitlab.doc.ic.ac.uk/cm3914/apx.git/app/db"
-	"https://gitlab.doc.ic.ac.uk/cm3914/apx.git/app/handlers/users"
-	"https://gitlab.doc.ic.ac.uk/cm3914/apx.git/app/middlewares"
 	"net/http"
 )
 

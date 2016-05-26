@@ -1,10 +1,10 @@
 package users
 
 import (
+	"github.com/callummance/apx-srv/models"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/OliWheeler/quick_apx/app/models"
 	"log"
 )
 

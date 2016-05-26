@@ -5,8 +5,8 @@ package middlewares
 import (
 	"net/http"
 
+	"github.com/callummance/apx/db"
 	"github.com/gin-gonic/gin"
-	"github.com/OliWheeler/quick_apx/app/db"
 )
 
 // Connect middleware clones the database session for each request and
