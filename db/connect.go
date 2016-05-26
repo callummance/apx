@@ -18,7 +18,7 @@ var (
 const (
 	// MongoDBUrl is the default mongodb url that will be used to connect to the
 	// database.
-	MongoDBUrl = "mongodb://apx.twintailsare.moe:27017"
+	MongoDBUrl = "mongodb://db.twintailsare.moe:27017"
 )
 
 // Connect connects to mongodb
