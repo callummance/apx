@@ -47,18 +47,19 @@ func AuthHandler(c *gin.Context) {
 	}
 	sessionKey := NewSession(uid, mdb)
 	c.SetCookie(sessionCookieName, sessionKey.SessionKey, sessionDuration, "/", "apx.twintailsare.moe", false, false)
-	fmt.Printf("Creating a new cookie with key %s", sessionKey.SessionKey)
 	sessionUser, err := AuthSession(c, mdb)
-	fmt.Printf("Session cookie found for %q\n", sessionUser)
+        if (sessionUser != nil) {
+	  fmt.Printf("Session cookie found for %q\n", sessionUser)
+        }
 }
 
 func AuthSession(c *gin.Context, mdb *mgo.Database) (*bson.ObjectId, error) {
 	sessionKey, err := c.Cookie(sessionCookieName)
 	if err != nil {
-		fmt.Println("no cookie found")
 		return nil, err
 		//Cookie not found, apparently...
 	}
+
 	//Lookup session in database
 	query := mdb.C(models.CollectionSessions).Find(bson.M{"session_key": sessionKey})
 	n, err := query.Count()
@@ -79,6 +80,11 @@ func AuthSession(c *gin.Context, mdb *mgo.Database) (*bson.ObjectId, error) {
 		if session.Expires < currentTime {
 			mdb.C(models.CollectionSessions).RemoveId(session.Id)
 		} else {
+                        fuser, _ := models.RetrieveUser(session.UID, mdb)
+                        if (fuser != nil) {
+                          fmt.Printf("Found a session belonging to %s\n",
+                                      fuser.Name)
+                        }
 			return &session.UID, nil
 		}
 	}
@@ -101,8 +107,6 @@ func AuthenticateUser(token string, mdb *mgo.Database) (bson.ObjectId, error) {
 	} else if no != 0 {
 		//If the user exists, return the user id and nil
 		err := query.One(&user)
-		fmt.Printf("Welcome back to the old user! UID = %s\n",
-			uid)
 		if err != nil {
 			return "", err
 		}
@@ -110,8 +114,6 @@ func AuthenticateUser(token string, mdb *mgo.Database) (bson.ObjectId, error) {
 		//Otherwise, make a new user with BuildUser, and add it to the database
 		user = BuildUser(userDetails)
 		mdb.C(models.CollectionUsers).Insert(user)
-		fmt.Printf("Welcome to the new user! UID = %s, Name = %s\n",
-			uid, user.Name)
 	}
 	return user.Id, nil
 }

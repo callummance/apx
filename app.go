@@ -23,7 +23,7 @@ func main() {
 	//router.GET("/", func(c *gin.Context) {
 	//  http.ServeFile(c.Writer, c.Request, "index.html")
 	//})
-	router.StaticFS("/home", http.Dir("../../../../../apx/webpage"))
+	router.StaticFS("/home", http.Dir("../../../../../assignments/apex_name_subject_to_change/webpage"))
 	router.GET("/loggedin", func(c *gin.Context) {
 		c.Redirect(303, "/home/dashboard.html")
 	})
