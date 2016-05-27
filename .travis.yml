@@ -1,4 +1,4 @@
 language: go
-sudo: false
+sudo: true
 go:
   - tip
