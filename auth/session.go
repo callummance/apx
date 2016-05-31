@@ -5,8 +5,7 @@ import (
 	"encoding/base64"
 	"time"
         "github.com/callummance/apx-srv/models"
-        "gopkg.in/mgo.v2/bson"
-        "gopkg.in/mgo.v2"
+        "github.com/callummance/apx-srv/db"
 )
 
 //The size in bytes of the session key to be generated
@@ -27,13 +26,12 @@ func getRandomkey() string {
 
 //Creates a new session with a randomly generated session key and a
 //reasonable expiry time
-func NewSession(uid bson.ObjectId, mdb *mgo.Database) models.Session {
+func NewSession(uid string, rdb *db.DbConn) models.Session {
 	var newSession models.Session
-        newSession.Id = bson.NewObjectId()
 	newSession.UID = uid
 	newSession.SessionKey = getRandomkey()
 	newSession.Expires = time.Now().UTC().Unix() + sessionDuration
 
-        mdb.C(models.CollectionSessions).Insert(newSession)
+        rdb.WriteSession(newSession)
 	return newSession
 }

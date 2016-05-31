@@ -1,26 +1,26 @@
 package models
 
-import "gopkg.in/mgo.v2/bson"
+//import "github.com/dancannon/gorethink"
 
 type Project struct {
-	Id        bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
-	Public    bool `json:"public"  binding:"required" bson:"public"`
-	Name      string `json:"name" binding:"required" bson:"name"`
-	Owners    []bson.ObjectId `json:"owners" binding:"required" bson:"owners"`
-	ContentId  bson.ObjectId `json:"contentId" binding:"required" bson:"contentId"`
+  Id         string   `gorethink:"id" bson:"_id,omitempty"`
+  Public     bool     `gorethink:"public" bson:"public"`
+  Name       string   `gorethink:"name" bson:"name"`
+  Owners     []string `gorethink:"owner" bson:"owners"`
+  ContentId  string   `gorethink:"contentId" bson:"contentId"`
 }
 
 type ProjectContent struct {
-	Id     bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
-	Tracks []Track `json:"tracks" bson:"tracks"`
-	Tempo  float64 `json:"tempo" bson:"tempo"`
+  Id     string  `gorethink:"id" bson:"_id,omitempty"`
+  Tracks []Track `gorethink:"tracks" bson:"tracks"`
+  Tempo  float64 `gorethink:"tempo" bson:"tempo"`
 }
 type Track struct {
-	Id        bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
-	Volume    int8 `json:"volume"`
-	TrackType string `json:"tracktype"`
-	Solo      bool `json:"solo"`
-	Mute      bool `json:"mute"`
+  Id        string  `gorethink:"id" bson:"_id,omitempty"`
+  Volume    int8    `gorethink:"volume"`
+  TrackType string  `gorethink:"trackType"`
+  Solo      bool    `gorethink:"solo"`
+  Mute      bool    `gorethink:"mute"`
 }
 
 type InstrumentTrack struct {
@@ -28,9 +28,9 @@ type InstrumentTrack struct {
 }
 
 type Clip struct {
-	Id        bson.ObjectId `json:"id"`
-	StartTime int `json:"startTime"`
-	Duration  int `json:"duration"`
+	Id        string  `json:"id"`
+	StartTime int     `json:"startTime"`
+	Duration  int     `json:"duration"`
 }
 
 type InstrumentClip struct {
@@ -55,8 +55,4 @@ func NewDefaultProjectContent() ProjectContent {
 	}
 	return projectContent
 }
-
-
-
-
 
