@@ -7,6 +7,7 @@ import (
   "fmt"
 )
 
+
 func (c *DbConn) GetUUID() string {
   query, err := gorethink.UUID().Run(c.Session)
   if (err != nil) {

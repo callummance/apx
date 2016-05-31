@@ -15,8 +15,10 @@ func main() {
 
         //Connect to the database and start gin router
 	db.Connect()
-        db.ReactSession = db.ReactConnect(db.RethinkDBUrl, db.RethinkDBDatabse)
 	router := gin.Default()
+
+        //Start function to clear expired sessions
+        go db.ReactSession.CullSessions()
 
 	// Middlewares
 	//router.Use(middlewares.Connect)
