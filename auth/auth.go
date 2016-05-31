@@ -38,6 +38,7 @@ func AuthHandler(c *gin.Context) {
     panic("Token error, should probably handle this better...")
   }
   sessionKey := NewSession(uid, rdb)
+  fmt.Println("Made new session.")
   c.SetCookie(sessionCookieName, sessionKey.SessionKey, sessionDuration, "/", "apx.twintailsare.moe", false, false)
 }
 
@@ -45,11 +46,11 @@ func AuthHandler(c *gin.Context) {
 
 //Authenticates an existing user session and retrieves the
 //user ID it was assigned to
-func AuthSession(c *gin.Context, rdb *db.DbConn) (string, error) {
+func AuthSession(c *gin.Context, rdb *db.DbConn) (string, bool, error) {
   //Get cookie from the gin router
   sessionKey, err := c.Cookie(sessionCookieName)
   if err != nil {
-    return "", err
+    return "", false, err
     //Cookie not found, apparently...
   }
   
@@ -57,19 +58,19 @@ func AuthSession(c *gin.Context, rdb *db.DbConn) (string, error) {
   session, found, err := rdb.GetSession(sessionKey)
   if err != nil {
     fmt.Println("couldnt run query")
-    return "", err
+    return "", false, err
   }
   if !found {
     fmt.Println("no matching cookies")
-    return "", errors.New("No such session")
+    return "", false, nil
   } else {
     curTime := time.Now().UTC().Unix()
     expireTime := session.Expires
     if (expireTime < curTime) {
-      return "", errors.New("Session expired")
+      return "", false, nil
     } else {
       fmt.Println(session.UID)
-      return session.UID, nil
+      return session.UID, true, nil
     }
   }
 }

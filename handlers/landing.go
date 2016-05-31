@@ -8,8 +8,8 @@ import (
 
 func LandingHandler(c *gin.Context) {
   rdb := db.ReactSession
-  uid, err := auth.AuthSession(c, rdb)
-  if uid == "" {
+  _, found, err := auth.AuthSession(c, rdb)
+  if !found {
     c.Redirect(307, "/home")
   } else if err != nil {
     panic("wat")

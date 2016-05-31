@@ -27,6 +27,9 @@ func main() {
         //Serve static angular files
 	router.StaticFS("/home", http.Dir("../../../../../assignments/apex_name_subject_to_change/webpage"))
 
+        //API Endpoints
+        handlers.ApiHandlers(router)
+
         //Redirect for logged-in users
 	router.GET("/loggedin", func(c *gin.Context) {
 		c.Redirect(303, "/home/dashboard.html")
