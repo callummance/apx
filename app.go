@@ -9,10 +9,13 @@ import (
 	"net/http"
 )
 
-// MongoDB : apx.twintailsare.moe
+const siteRoot string = "../../../../../assignments/apex_name_subject_to_change"
+
+func pageLoc(rel string) string {
+  return siteRoot + rel
+}
 
 func main() {
-
         //Connect to the database and start gin router
 	db.Connect()
 	router := gin.Default()
@@ -25,7 +28,12 @@ func main() {
 	router.Use(middlewares.ErrorHandler)
 
         //Serve static angular files
-	router.StaticFS("/home", http.Dir("../../../../../assignments/apex_name_subject_to_change/webpage"))
+	//router.StaticFS("/home", http.Dir("../../../../../assignments/apex_name_subject_to_change/webpage"))
+	router.StaticFile("/dash.html", pageLoc("/index.html"))
+	router.StaticFile("/systemjs.config.js", pageLoc("/systemjs.config.js"))
+	router.StaticFS("/built/app", http.Dir(pageLoc("/built/app/")))
+	router.StaticFS("/app", http.Dir(pageLoc("/src/app/")))
+	router.StaticFS("/node_modules", http.Dir(pageLoc("/node_modules")))
 
         //API Endpoints
         handlers.ApiHandlers(router)
@@ -39,7 +47,7 @@ func main() {
 	router.GET("/fbauth", auth.AuthHandler)
 
         //Redirect for landing page
-	router.GET("/", handlers.LandingHandler)
+	//router.GET("/", handlers.LandingHandler)
 
         //Run the server
 	router.Run(":80")

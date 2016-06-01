@@ -21,6 +21,7 @@ func BuildUser(details FbDetails, c *db.DbConn) models.User {
 	newUser.Name = userDetails.Name
 	newUser.Email = userDetails.Email
 	newUser.Avatar = defaultAvatar
+        newUser.Private = false
 
 	return newUser
 }

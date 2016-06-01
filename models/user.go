@@ -10,13 +10,14 @@ const (
 )
 
 type User struct {
-  Id       string   `gorethink:"id,omitempty" json:"id"`
-  FId      string   `gorethink:"fid" json:"-"`
-  Name     string   `gorethink:"name" json:"name"`
-  Avatar   string   `gorethink:"avatar" json:"avatar"`
-  Email    string   `gorethink:"email" json:"email"`
-  Projects []string `gorethink:"projects" json:"-"`
-  Friends  []string `gorethink:"friends" json:"-"`
+  Id        string   `gorethink:"id,omitempty" json:"id"`
+  FId       string   `gorethink:"fid" json:"-"`
+  Name      string   `gorethink:"name" json:"name"`
+  Avatar    string   `gorethink:"avatar" json:"avatar"`
+  Email     string   `gorethink:"email" json:"email"`
+  Private   bool     `gorethink:"private" json:"private"`
+  Projects  []string `gorethink:"projects" json:"-"`
+  Following []string `gorethink:"following" json:"-"`
 }
 
 type Session struct {

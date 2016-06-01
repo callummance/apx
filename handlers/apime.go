@@ -67,9 +67,9 @@ func removeFriend(c *gin.Context, me *models.User) {
   c.BindJSON(&req)
   newNemesis := req["uid"]
 
-  for i, uid := range me.Friends {
+  for i, uid := range me.Following {
     if (uid == newNemesis) {
-      me.Friends = append(me.Friends[:i], me.Friends[i+1:]...)
+      me.Following = append(me.Following[:i], me.Following[i+1:]...)
       modified, err := rdb.ModifyUser(me)
       if (err != nil) {
         c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
@@ -93,7 +93,7 @@ func addFriend(c *gin.Context, me *models.User) {
   c.BindJSON(&req)
 
   newFriend := req["uid"]
-  for _, uid := range me.Friends {
+  for _, uid := range me.Following {
     if (uid == newFriend) {
       c.Status(200)
       return
@@ -106,7 +106,7 @@ func addFriend(c *gin.Context, me *models.User) {
   } else if (!found) {
     c.String(404, "{\"code\": 1002, \"message\": \"User does not exist\"}")
   }
-  me.Friends = append(me.Friends, newFriend)
+  me.Following = append(me.Following, newFriend)
   modified, err := rdb.ModifyUser(me)
   if (err != nil) {
     c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
@@ -151,7 +151,7 @@ func getFriendHandler(c *gin.Context) {
     } else if (!found) {
       c.String(404, "{\"code\": 1002, \"message\": \"User does not exist\"}")
     } else {
-      c.JSON(200, me.Friends)
+      c.JSON(200, me.Following)
     }
   }
 }
