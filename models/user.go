@@ -10,7 +10,7 @@ const (
 )
 
 type User struct {
-  Id       string   `gorethink:"id,omitempty" json:"-"`
+  Id       string   `gorethink:"id,omitempty" json:"id"`
   FId      string   `gorethink:"fid" json:"-"`
   Name     string   `gorethink:"name" json:"name"`
   Avatar   string   `gorethink:"avatar" json:"avatar"`

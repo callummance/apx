@@ -61,6 +61,17 @@ func (c *DbConn) GetSession(sessionKey string) (*models.Session, bool, error) {
   }
 }
 
+func (c *DbConn) ModifyUser (user *models.User) (bool, error) {
+  res, err := UserTable.Get(user.Id).Update(*user).RunWrite(c.Session)
+  if (err != nil) {
+    return false, err
+  } else if (res.Replaced == 0) {
+    return false, nil
+  } else {
+    return true, err
+  }
+}
+
 func (c *DbConn) GetUser(uid string) (*models.User, bool, error) {
   query, err := UserTable.Get(uid).Run(c.Session)
   if (err != nil) {

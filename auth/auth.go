@@ -69,7 +69,6 @@ func AuthSession(c *gin.Context, rdb *db.DbConn) (string, bool, error) {
     if (expireTime < curTime) {
       return "", false, nil
     } else {
-      fmt.Println(session.UID)
       return session.UID, true, nil
     }
   }
