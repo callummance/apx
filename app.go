@@ -28,7 +28,10 @@ func main() {
 	router.Use(middlewares.ErrorHandler)
 
         //Serve static angular files
-	router.StaticFS("/home", http.Dir(pageLoc("/webpage")))
+	router.StaticFile("/home", pageLoc("/index.html"))
+	router.StaticFile("/login", pageLoc("/index.html"))
+	router.StaticFile("/explore", pageLoc("/index.html"))
+
 	router.GET("/dashboard/*d", func(c *gin.Context) {
           http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
         })
