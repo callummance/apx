@@ -29,7 +29,12 @@ func main() {
 
         //Serve static angular files
 	router.StaticFS("/home", http.Dir(pageLoc("/webpage")))
-	router.StaticFile("/dashboard", pageLoc("/index.html"))
+	router.GET("/dashboard/*d", func(c *gin.Context) {
+          http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
+        })
+	router.GET("/project/*d", func(c *gin.Context) {
+          http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
+        })
 	router.StaticFile("/systemjs.config.js", pageLoc("/systemjs.config.js"))
 	router.StaticFS("/built/app", http.Dir(pageLoc("/built/app/")))
 	router.StaticFS("/app", http.Dir(pageLoc("/src/app/")))
