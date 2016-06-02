@@ -38,10 +38,15 @@ func main() {
 	router.GET("/project/*d", func(c *gin.Context) {
           http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
         })
+	router.GET("/profile/*d", func(c *gin.Context) {
+          http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
+        })
+
 	router.StaticFile("/systemjs.config.js", pageLoc("/systemjs.config.js"))
 	router.StaticFS("/built/app", http.Dir(pageLoc("/built/app/")))
 	router.StaticFS("/app", http.Dir(pageLoc("/src/app/")))
 	router.StaticFS("/node_modules", http.Dir(pageLoc("/node_modules")))
+	router.StaticFile("/js/fblogin.js", pageLoc("/js/fblogin.js"))
 
         //API Endpoints
         handlers.ApiHandlers(router)
@@ -56,6 +61,10 @@ func main() {
 
         //Redirect for landing page
 	router.GET("/", handlers.LandingHandler)
+
+	router.NoRoute(func(c *gin.Context) {
+          http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
+        })
 
         //Run the server
 	router.Run(":80")
