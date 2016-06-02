@@ -20,10 +20,6 @@ func getUser (c *gin.Context) {
     c.String(403, "{\"code\": 1004, \"message\": \"User has set their profile to private\"}")
   } else {
     c.JSON(200, target)
-    c.JSON(200, target)
-    c.JSON(200, target)
-    c.JSON(200, target)
-    c.JSON(200, target)
   }
 }
 
