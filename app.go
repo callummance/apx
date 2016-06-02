@@ -28,8 +28,8 @@ func main() {
 	router.Use(middlewares.ErrorHandler)
 
         //Serve static angular files
-	//router.StaticFS("/home", http.Dir("../../../../../assignments/apex_name_subject_to_change/webpage"))
-	router.StaticFile("/dash.html", pageLoc("/index.html"))
+	router.StaticFS("/home", http.Dir(pageLoc("/webpage")))
+	router.StaticFile("/dashboard", pageLoc("/index.html"))
 	router.StaticFile("/systemjs.config.js", pageLoc("/systemjs.config.js"))
 	router.StaticFS("/built/app", http.Dir(pageLoc("/built/app/")))
 	router.StaticFS("/app", http.Dir(pageLoc("/src/app/")))
@@ -40,14 +40,14 @@ func main() {
 
         //Redirect for logged-in users
 	router.GET("/loggedin", func(c *gin.Context) {
-		c.Redirect(303, "/home/dashboard.html")
+		c.Redirect(303, "/dashboard")
 	})
 
         //Login page which installs the session cookie
 	router.GET("/fbauth", auth.AuthHandler)
 
         //Redirect for landing page
-	//router.GET("/", handlers.LandingHandler)
+	router.GET("/", handlers.LandingHandler)
 
         //Run the server
 	router.Run(":80")

@@ -26,12 +26,3 @@ type Session struct {
   Expires    int64    `gorethink:"expires_at"`
 }
 
-func (user User)NewDefaultProject() Project {
-	project := Project{
-		Public:true,
-		Name:"untitled",
-		Owners:[]string{user.Id},
-	}
-	return project
-}
-

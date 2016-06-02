@@ -1,13 +1,10 @@
 package models
 
-//import "github.com/dancannon/gorethink"
-
 type Project struct {
-  Id         string   `gorethink:"id" bson:"_id,omitempty"`
-  Public     bool     `gorethink:"public" bson:"public"`
-  Name       string   `gorethink:"name" bson:"name"`
-  Owners     []string `gorethink:"owner" bson:"owners"`
-  ContentId  string   `gorethink:"contentId" bson:"contentId"`
+  Id         string   `gorethink:"id" json:"pid"`
+  Public     bool     `gorethink:"public" json:"public"`
+  Name       string   `gorethink:"name" json:"name"`
+  Owners     []string `gorethink:"owner" json:"owners"`
 }
 
 type ProjectContent struct {
@@ -56,3 +53,11 @@ func NewDefaultProjectContent() ProjectContent {
 	return projectContent
 }
 
+func NewDefaultProject(uid string) Project {
+  project := Project{
+    Public:true,
+    Name:"untitled",
+    Owners:[]string{uid},
+  }
+  return project
+}
