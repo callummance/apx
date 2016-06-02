@@ -19,6 +19,7 @@ func getUser (c *gin.Context) {
   } else if (target.Private) {
     c.String(403, "{\"code\": 1004, \"message\": \"User has set their profile to private\"}")
   } else {
+    c.Header("Access-Control-Allow-Origin", "*")
     c.JSON(200, target)
   }
 }
