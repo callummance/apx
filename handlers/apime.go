@@ -178,3 +178,35 @@ func getProjHandler(c *gin.Context) {
     }
   }
 }
+
+
+func getProjMetaHandler(c *gin.Context) {
+  rdb := db.ReactSession
+
+  //Get the cookie
+  curUser, found, err := auth.AuthSession(c, rdb)
+  if (!found && err != nil) {
+    c.String(401, "{\"code\": 1001, \"message\": \"No session key was provided\"}")
+  } else if (!found) {
+    c.String(403, "{\"code\": 1000, \"message\": \"Could not find that session\"}")
+  } else if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+  } else {
+    me, found, err := rdb.GetUser(curUser)
+    if (err != nil){
+      c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    } else if (!found) {
+      c.String(404, "{\"code\": 1002, \"message\": \"User does not exist\"}")
+    } else {
+      res := []models.Project{}
+      for _, pid := range me.Projects {
+        proj, found, err := rdb.GetProject(pid)
+        if (!found || err != nil) {
+          panic("wat")
+        }
+        res = append(res, *proj)
+      }
+      c.JSON(200, res)
+    }
+  }
+}
