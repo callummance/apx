@@ -82,6 +82,17 @@ func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 
 }
 
+func (c *DbConn) ModifyProject(proj *models.Project) (bool, error) {
+  res, err := ProjectTable.Get(proj.Id).Update(*proj).RunWrite(c.Session)
+  if err != nil {
+    return false, err
+  } else if res.Replaced == 0 {
+    return false, nil
+  } else {
+    return true, err
+  }
+}
+
 func (c *DbConn) GetSession(sessionKey string) (*models.Session, bool, error) {
 	query, err := SessionTable.Get(sessionKey).Run(c.Session)
 	if err != nil {

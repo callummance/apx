@@ -5,6 +5,7 @@ import (
 	"github.com/callummance/apx-srv/db"
 	"github.com/callummance/apx-srv/models"
 	"github.com/gin-gonic/gin"
+        "fmt"
 )
 
 func isProjPublic(pid string) bool {
@@ -52,7 +53,7 @@ func getProject(c *gin.Context) {
 	proj, found, err := rdb.GetProject(pid)
 
 	if !found && err == nil {
-		c.String(403, "{\"code\": 2000, \"message\": \"Could not find that project\"}")
+		c.String(404, "{\"code\": 2000, \"message\": \"Could not find that project\"}")
 	} else if err != nil {
 		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
 	} else {
@@ -79,4 +80,52 @@ func userOwnsProj(uid string, proj *models.Project) bool {
 		}
 	}
 	return false
+}
+
+
+func postProjHandler(c *gin.Context, mod string) {
+  rdb := db.ReactSession
+
+  //Get the cookie
+  curUser, found, err := auth.AuthSession(c, rdb)
+  if (!found && err != nil) {
+    c.String(401, "{\"code\": 1001, \"message\": \"No session key was provided\"}")
+  } else if (!found) {
+    c.String(403, "{\"code\": 1000, \"message\": \"Could not find that session\"}")
+  } else if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+  } else {
+    pid := c.Param("pid")
+    proj, found, err := rdb.GetProject(pid)
+
+    if !found && err == nil {
+      c.String(404, "{\"code\": 2000, \"message\": \"Could not find that project\"}")
+    } else if err != nil {
+      c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    } else if (!userOwnsProj(curUser, proj)) {
+      c.String(403, "{\"code\": 2001, \"message\": \"You do not own that project\"}")
+    } else if (mod == "/meta"){
+        modifyProjMeta(c, proj)
+    } else {
+      fmt.Println(mod)
+    }
+  }
+}
+
+func modifyProjMeta(c *gin.Context, proj *models.Project) {
+  rdb := db.ReactSession
+  oldPID := proj.Id
+  oldOwners := proj.Owners
+  c.BindJSON(proj)
+  proj.Id = oldPID
+  proj.Owners = oldOwners
+
+  modified, err := rdb.ModifyProject(proj)
+  if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+  } else if (!modified) {
+    c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+  } else {
+    c.Status(201)
+  }
 }

@@ -28,6 +28,9 @@ func ApiHandlers(router *gin.Engine) {
 	})
 
 	//Handlers for '/project/*' endpoints
-	router.POST("/api/project/new", postNewProject)
+	router.POST("/api/project", postNewProject)
 	router.GET("/api/project/:pid", getProject)
+        router.POST("/api/project/:pid/*action", func(c *gin.Context) {
+          postProjHandler(c, c.Param("action"))
+        })
 }
