@@ -27,6 +27,7 @@ func main() {
 	//router.Use(middlewares.Connect)
 	router.Use(middlewares.ErrorHandler)
         router.Use(middlewares.AuthMiddleware)
+        router.Use(middlewares.CORS)
 
         //Serve static angular files
 	router.StaticFile("/home", pageLoc("/index.html"))
