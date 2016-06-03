@@ -35,7 +35,7 @@ func (c *DbConn) WriteSession(session models.Session) error {
 	}
 }
 
-func (c *DbConn) GetProject(pid string) (*models.Session, bool, error) {
+func (c *DbConn) GetProject(pid string) (*models.Project, bool, error) {
 	resp, err := ProjectTable.Get(pid).Run(c.Session)
 	if err != nil {
 		return nil, false, err
@@ -47,7 +47,7 @@ func (c *DbConn) GetProject(pid string) (*models.Session, bool, error) {
 		//No results were found
 		return nil, false, nil
 	} else {
-		session := models.Session{}
+		session := models.Project{}
 		err = resp.One(&session)
 		if err != nil {
 			return nil, false, err
