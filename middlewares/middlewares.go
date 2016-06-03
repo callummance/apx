@@ -5,20 +5,29 @@ package middlewares
 import (
   "net/http"
 
-  //"github.com/callummance/apx-srv/db"
+  "github.com/callummance/apx-srv/db"
+  "github.com/callummance/apx-srv/auth"
   "github.com/gin-gonic/gin"
+  "fmt"
 )
 
-// Connect middleware clones the database session for each request and
-// makes the `db` object available for each handler
-//func Connect(c *gin.Context) {
-//  s := db.Session.Clone()
-//
-//  defer s.Close()
-//
-//  c.Set("db", s.DB(db.Mongo.Database))
-//  c.Next()
-//}
+func AuthMiddleware(c *gin.Context) {
+  if (c.Request.URL.Path != "/dashboard") {
+    c.Next()
+    return
+  }
+  rdb := db.ReactSession
+  _, found, err := auth.AuthSession(c, rdb)
+  if !found {
+    c.Redirect(307, "/login")
+    fmt.Println("User not logged in")
+    c.Abort()
+  } else if err != nil {
+    panic("wat")
+  } else {
+    c.Next()
+  }
+}
 
 // ErrorHandler is a middleware to handle errors encountered during requests
 func ErrorHandler(c *gin.Context) {

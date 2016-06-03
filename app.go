@@ -26,6 +26,7 @@ func main() {
 	// Middlewares
 	//router.Use(middlewares.Connect)
 	router.Use(middlewares.ErrorHandler)
+        router.Use(middlewares.AuthMiddleware)
 
         //Serve static angular files
 	router.StaticFile("/home", pageLoc("/index.html"))
@@ -60,7 +61,7 @@ func main() {
 	router.GET("/fbauth", auth.AuthHandler)
 
         //Redirect for landing page
-	router.GET("/", handlers.LandingHandler)
+	//router.GET("/", handlers.LandingHandler)
 
 	router.NoRoute(func(c *gin.Context) {
           http.ServeFile(c.Writer, c.Request, pageLoc("/index.html"))
