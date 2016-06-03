@@ -106,6 +106,8 @@ func postProjHandler(c *gin.Context, mod string) {
       c.String(403, "{\"code\": 2001, \"message\": \"You do not own that project\"}")
     } else if (mod == "/meta"){
         modifyProjMeta(c, proj)
+    } else if (mod == "/addowner"){
+      addProjOwner(c, proj)
     } else {
       fmt.Println(mod)
     }
@@ -127,5 +129,43 @@ func modifyProjMeta(c *gin.Context, proj *models.Project) {
     c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
   } else {
     c.Status(201)
+  }
+}
+
+func addProjOwner(c *gin.Context, proj *models.Project) {
+  rdb := db.ReactSession
+  req := map[string]string{}
+
+  c.BindJSON(&req)
+
+  newOwner := req["uid"]
+
+  newOwn, found, err := rdb.GetUser(newOwner)
+  if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    return 
+  } else if (!found) {
+    c.String(404, "{\"code\": 1002, \"message\": \"User does not exist\"}")
+    return
+  }
+
+  proj.Owners = append(proj.Owners, newOwner)
+  newOwn.Projects = append(newOwn.Projects, proj.Id)
+  modified, err := rdb.ModifyProject(proj)
+  if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    return
+  } else if (!modified) {
+    c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+    return
+  } else {
+    modified, err := rdb.ModifyUser(newOwn)
+    if (err != nil) {
+      c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    } else if (!modified) {
+      c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+    } else {
+      c.Status(201)
+    }
   }
 }
