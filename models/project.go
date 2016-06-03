@@ -7,6 +7,11 @@ type Project struct {
   Owners     []string `gorethink:"owner" json:"owners"`
 }
 
+type ProjectContentTemp struct {
+  Id string `gorethink:"id" json "pid"`
+  Content string `gorethink:"content" json:"content"`
+}
+
 type ProjectContent struct {
   Id     string  `gorethink:"id" bson:"_id,omitempty"`
   Tracks []Track `gorethink:"tracks" bson:"tracks"`

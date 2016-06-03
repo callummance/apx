@@ -34,4 +34,6 @@ func ApiHandlers(router *gin.Engine) {
         router.POST("/api/project/:pid/*action", func(c *gin.Context) {
           postProjHandler(c, c.Param("action"))
         })
+        router.GET("/api/projectcontent/:pid", getProjectContent)
+        router.POST("/api/projectcontent/:pid", writeProjectContent)
 }

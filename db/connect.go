@@ -11,6 +11,7 @@ var (
 	SessionTable gorethink.Term = gorethink.DB("apx").Table("session")
 	UserTable    gorethink.Term = gorethink.DB("apx").Table("user")
 	ProjectTable gorethink.Term = gorethink.DB("apx").Table("project")
+	ProjectCTable gorethink.Term = gorethink.DB("apx").Table("projectcontent")
 )
 
 const (

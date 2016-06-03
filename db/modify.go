@@ -57,9 +57,36 @@ func (c *DbConn) GetProject(pid string) (*models.Project, bool, error) {
 	}
 }
 
+
+func (c *DbConn) GetProjectContent(pid string) (*models.ProjectContentTemp, error) {
+	resp, err := ProjectCTable.Get(pid).Run(c.Session)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Close()
+
+	//Check that a result was found
+	if resp.IsNil() {
+		//No results were found
+		return nil, errors.New("wat")
+	} else {
+		session := models.ProjectContentTemp{}
+		err = resp.One(&session)
+		if err != nil {
+			return nil, err
+		} else {
+			return &session, nil
+		}
+	}
+}
+
 func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 	proj := models.NewDefaultProject(me.Id)
 	proj.Id = c.GetUUID()
+        projContent := models.ProjectContentTemp{}
+        projContent.Id = proj.Id
+        projContent.Content = ""
+
 
 	me.Projects = append(me.Projects, proj.Id)
 	found, err := c.ModifyUser(me)
@@ -70,6 +97,7 @@ func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 	}
 
 	resp, err := ProjectTable.Insert(proj).RunWrite(c.Session)
+	_, _ = ProjectCTable.Insert(projContent).RunWrite(c.Session)
 	if err != nil {
 		return nil, err
 	} else if resp.Errors != 0 {
@@ -81,6 +109,18 @@ func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 	}
 
 }
+
+func (c *DbConn) ModifyProjectContent(proj *models.ProjectContentTemp) (bool, error) {
+  res, err := ProjectCTable.Get(proj.Id).Update(*proj).RunWrite(c.Session)
+  if err != nil {
+    return false, err
+  } else if res.Replaced == 0 {
+    return false, nil
+  } else {
+    return true, err
+  }
+}
+
 
 func (c *DbConn) ModifyProject(proj *models.Project) (bool, error) {
   res, err := ProjectTable.Get(proj.Id).Update(*proj).RunWrite(c.Session)
