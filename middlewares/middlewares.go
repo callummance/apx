@@ -12,20 +12,34 @@ import (
 )
 
 func AuthMiddleware(c *gin.Context) {
-  if (c.Request.URL.Path != "/dashboard") {
-    c.Next()
-    return
+  fmt.Println(c.Request.URL.Path)
+  if (c.Request.URL.Path == "/dashboard/" || c.Request.URL.Path == "/studio/" || c.Request.URL.Path == "/profile/") {
+    if (isLoggedIn(c)){
+      c.Next()
+    } else {
+      c.Redirect(302, "/login")
+      c.Abort()
+    }
   }
+  if (c.Request.URL.Path == "/login" || c.Request.URL.Path == "/") {
+    if (isLoggedIn(c)){
+      c.Redirect(302, "/dashboard")
+      c.Abort()
+    } else {
+      c.Next()
+    }
+  }
+}
+
+func isLoggedIn(c *gin.Context) bool {
   rdb := db.ReactSession
   _, found, err := auth.AuthSession(c, rdb)
   if !found {
-    c.Redirect(307, "/login")
-    fmt.Println("User not logged in")
-    c.Abort()
+    return false
   } else if err != nil {
     panic("wat")
   } else {
-    c.Next()
+    return true
   }
 }
 
