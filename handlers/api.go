@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+        "github.com/callummance/apx-srv/events"
 )
 
 func ApiHandlers(router *gin.Engine) {
@@ -36,4 +37,5 @@ func ApiHandlers(router *gin.Engine) {
         })
         router.GET("/api/projectcontent/:pid", getProjectContent)
         router.POST("/api/projectcontent/:pid", writeProjectContent)
+        router.GET("/api/projectsub/:pid", events.GetSub)
 }

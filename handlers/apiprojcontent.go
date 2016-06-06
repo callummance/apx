@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/callummance/apx-srv/db"
 	"github.com/callummance/apx-srv/models"
+	"github.com/callummance/apx-srv/events"
 	"github.com/gin-gonic/gin"
         "fmt"
 )
@@ -45,6 +46,7 @@ func writeProjectContent(c *gin.Context) {
 	} else {
           fmt.Println(proj)
           modifyProjContent(c, proj)
+          events.UpdateProject(pid, proj.Content)
 	}
 
 }
