@@ -108,6 +108,8 @@ func postProjHandler(c *gin.Context, mod string) {
         modifyProjMeta(c, proj)
     } else if (mod == "/addowner"){
       addProjOwner(c, proj)
+    } else if (mod == "/leave") {
+      leaveProj(c, curUser)
     } else {
       fmt.Println(mod)
     }
@@ -167,5 +169,21 @@ func addProjOwner(c *gin.Context, proj *models.Project) {
     } else {
       c.Status(201)
     }
+  }
+}
+
+func leaveProj(c *gin.Context, uid string) {
+  rdb := db.ReactSession
+
+  proj := c.Param("pid")
+  modified, err := rdb.RemoveUserFromProject(proj, uid)
+  if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    return
+  } else if (!modified) {
+    c.String(403, "{\"code\": 2001, \"message\": \"User is not a member of that project.\"}")
+    return
+  } else {
+    c.Status(201)
   }
 }

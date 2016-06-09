@@ -231,3 +231,36 @@ func (c *DbConn) GetFBUser(fid string) (*models.User, bool, error) {
 		}
 	}
 }
+
+func (c *DbConn) RemoveUserFromProject(pid string, uid string) (bool, error) {
+  res, err := UserTable.Get(uid).Update(map[string]interface{}{
+    "projects": gorethink.Row.Field("projects").SetDifference([]string{pid}),
+  }).RunWrite(c.Session)
+  if err != nil {
+    return false, err
+  } else if res.Replaced == 0 {
+    return false, nil
+  } else {
+    res, err := ProjectTable.Get(pid).Update(map[string]interface{}{
+      "owner": gorethink.Row.Field("owner").SetDifference([]string{uid}),
+    }).RunWrite(c.Session)
+    if err != nil {
+      return false, err
+    } else if res.Replaced == 0 {
+      return false, nil
+    } else {
+      res, err := ProjectTable.Get(pid).Field("owner").Count().Run(c.Session)
+      defer res.Close()
+      if err != nil {
+        return false, err
+      } else {
+        var cnt int
+        res.One(&cnt)
+        if cnt == 0 {
+          _, _ = ProjectTable.Get(pid).Delete().RunWrite(c.Session)
+        }
+        return true, nil
+      }
+    }
+  }
+}
