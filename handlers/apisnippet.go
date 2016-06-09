@@ -161,12 +161,13 @@ func modifySnippetContent(c *gin.Context, snippetC *models.InstrumentSnippet) {
 func writeSnippetContent(c *gin.Context) {
 	rdb := db.ReactSession
 	sid := c.Param("sid")
-	snippet, err := rdb.GetProjectContent(sid)
+	snippet, err := rdb.GetSnippetContent(sid)
 	if err != nil {
+          fmt.Println(err)
   	  c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
 	} else {
           fmt.Println(snippet)
-          modifyProjContent(c, snippet)
+          modifySnippetContent(c, snippet)
           events.UpdateSnippet(sid, snippet.Content)
 	}
 

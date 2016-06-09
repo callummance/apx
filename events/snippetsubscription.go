@@ -50,7 +50,7 @@ func UnsubscribeFromSnippet(sid string, listener chan interface{}) {
 }
 
 func UpdateSnippet(sid string, diff string) {
-  if !isProjSubscribed(sid){
+  if !isSnippetSubscribed(sid){
     return
   } else {
     upd8Proj := snippet(sid)
