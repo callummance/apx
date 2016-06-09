@@ -264,3 +264,95 @@ func (c *DbConn) RemoveUserFromProject(pid string, uid string) (bool, error) {
     }
   }
 }
+
+
+func (c *DbConn) GetSnippet(sid string) (*models.Snippet, bool, error) {
+	resp, err := SnippetTable.Get(sid).Run(c.Session)
+	if err != nil {
+		return nil, false, err
+	}
+	defer resp.Close()
+
+	//Check that a result was found
+	if resp.IsNil() {
+		//No results were found
+		return nil, false, nil
+	} else {
+		session := models.Snippet{}
+		err = resp.One(&session)
+		if err != nil {
+			return nil, false, err
+		} else {
+			return &session, true, nil
+		}
+	}
+}
+
+
+func (c *DbConn) GetSnippetContent(sid string) (*models.InstrumentSnippet, error) {
+	resp, err := SnippetCTable.Get(sid).Run(c.Session)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Close()
+
+	//Check that a result was found
+	if resp.IsNil() {
+		//No results were found
+		return nil, errors.New("wat")
+	} else {
+		session := models.InstrumentSnippet{}
+		err = resp.One(&session)
+		if err != nil {
+			return nil, err
+		} else {
+			return &session, nil
+		}
+	}
+}
+
+func (c *DbConn) WriteSnippet(me *models.User) (*models.Snippet, error) {
+	snippet := models.NewDefaultSnippet(me.Id)
+	snippet.Id = c.GetUUID()
+        snippetContent := models.InstrumentSnippet{}
+        snippetContent.Id = snippet.Id
+        snippetContent.Content = ""
+
+
+
+	resp, err := SnippetTable.Insert(snippet).RunWrite(c.Session)
+	_, _ = SnippetCTable.Insert(snippetContent).RunWrite(c.Session)
+	if err != nil {
+		return nil, err
+	} else if resp.Errors != 0 {
+		return nil, errors.New("Database insert failed")
+	} else if resp.Inserted != 1 {
+		return nil, errors.New("Incorrect number of snippets inserted")
+	} else {
+		return &snippet, nil
+	}
+
+}
+
+func (c *DbConn) ModifySnippetContent(snippet *models.InstrumentSnippet) (bool, error) {
+  res, err := SnippetCTable.Get(snippet.Id).Update(*snippet).RunWrite(c.Session)
+  if err != nil {
+    return false, err
+  } else if res.Replaced == 0 {
+    return false, nil
+  } else {
+    return true, err
+  }
+}
+
+
+func (c *DbConn) ModifySnippet(snippet *models.Snippet) (bool, error) {
+  res, err := SnippetTable.Get(snippet.Id).Update(*snippet).RunWrite(c.Session)
+  if err != nil {
+    return false, err
+  } else if res.Replaced == 0 {
+    return false, nil
+  } else {
+    return true, err
+  }
+}

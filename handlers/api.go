@@ -37,5 +37,15 @@ func ApiHandlers(router *gin.Engine) {
         })
         router.GET("/api/projectcontent/:pid", getProjectContent)
         router.POST("/api/projectcontent/:pid", writeProjectContent)
-        router.GET("/api/projectsub/:pid", events.GetSub)
+        router.GET("/api/projectsub/:pid", events.GetSubP)
+
+	//Handlers for '/snippet/*' endpoints
+	router.POST("/api/snippet", postNewSnippet)
+	router.GET("/api/snippet/:sid", getSnippet)
+        router.POST("/api/snippet/:sid/*action", func(c *gin.Context) {
+          postSnippetHandler(c, c.Param("action"))
+        })
+        router.GET("/api/snippetcontent/:sid", getSnippetContent)
+        router.POST("/api/snippetcontent/:sid", writeSnippetContent)
+        router.GET("/api/snippetsub/:sid", events.GetSubS)
 }

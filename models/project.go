@@ -17,6 +17,7 @@ type ProjectContent struct {
   Tracks []Track `gorethink:"tracks" bson:"tracks"`
   Tempo  float64 `gorethink:"tempo" bson:"tempo"`
 }
+
 type Track struct {
   Id        string  `gorethink:"id" bson:"_id,omitempty"`
   Volume    int8    `gorethink:"volume"`
@@ -25,18 +26,16 @@ type Track struct {
   Mute      bool    `gorethink:"mute"`
 }
 
-type InstrumentTrack struct {
-
+type Snippet struct {
+  Id         string   `gorethink:"id" json:"id"`
+  Public     bool     `gorethink:"public" json:"public"`
+  Name       string   `gorethink:"name" json:"name"`
+  Owner      string   `gorethink:"owner" json:"owners"`
 }
 
-type Clip struct {
-	Id        string  `json:"id"`
-	StartTime int     `json:"startTime"`
-	Duration  int     `json:"duration"`
-}
-
-type InstrumentClip struct {
-
+type InstrumentSnippet struct {
+  Id  string `gorethink:"id" json:"id"`
+  Content string `gorethink:"content" json:"content"`
 }
 
 type Note struct {
@@ -65,4 +64,13 @@ func NewDefaultProject(uid string) Project {
     Owners:[]string{uid},
   }
   return project
+}
+
+func NewDefaultSnippet(uid string) Snippet{
+  snippet := Snippet {
+    Public:true,
+    Name:"untitled",
+    Owner:uid,
+  }
+  return snippet 
 }
