@@ -5,17 +5,23 @@ import (
 	"github.com/callummance/apx-srv/db"
 	"github.com/callummance/apx-srv/handlers"
 	"github.com/callummance/apx-srv/middlewares"
+	"github.com/callummance/apx-srv/conf"
 	"github.com/gin-gonic/gin"
 	"net/http"
+        "fmt"
 )
 
-const siteRoot string = "../../../../../assignments/apex_name_subject_to_change"
+var siteRoot string
 
 func pageLoc(rel string) string {
   return siteRoot + rel
 }
 
 func main() {
+        //Parse server config files
+        conf := conf.GetConfig()
+        siteRoot = conf.HtmlDir
+
         //Connect to the database and start gin router
 	db.Connect()
 	router := gin.Default()
@@ -69,6 +75,6 @@ func main() {
         })
 
         //Run the server
-	router.Run(":80")
+        router.Run(fmt.Sprintf(":%d", conf.Port))
 
 }
