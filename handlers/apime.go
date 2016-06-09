@@ -6,6 +6,7 @@ import (
   "github.com/callummance/apx-srv/db"
   "github.com/callummance/apx-srv/auth"
   "github.com/callummance/apx-srv/models"
+  "fmt"
 )
 
 func getMeHandler(c *gin.Context) {
@@ -179,6 +180,27 @@ func getProjHandler(c *gin.Context) {
   }
 }
 
+func getSnippetHandler(c *gin.Context) {
+  rdb := db.ReactSession
+
+  //Get the cookie
+  curUser, found, err := auth.AuthSession(c, rdb)
+  if (!found && err != nil) {
+    c.String(401, "{\"code\": 1001, \"message\": \"No session key was provided\"}")
+  } else if (!found) {
+    c.String(403, "{\"code\": 1000, \"message\": \"Could not find that session\"}")
+  } else if (err != nil) {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+  } else {
+    snippets, err := rdb.GetSnippets(curUser)
+    if err != nil {
+      fmt.Println(err)
+      c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    } else {
+      c.JSON(200, snippets)
+    }
+  }
+}
 
 func getProjMetaHandler(c *gin.Context) {
   rdb := db.ReactSession

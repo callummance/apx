@@ -10,6 +10,7 @@ func ApiHandlers(router *gin.Engine) {
 	router.GET("/api/me", getMeHandler)
 	router.GET("/api/me/following", getFriendHandler)
 	router.GET("/api/me/projects", getProjHandler)
+	router.GET("/api/me/snippets", getSnippetHandler)
 	router.GET("/api/me/projects/meta", getProjMetaHandler)
 	router.POST("/api/me", func(c *gin.Context) {
 		postMeHandler(c, "general")

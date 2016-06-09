@@ -169,6 +169,31 @@ func (c *DbConn) ModifyUser(user *models.User) (bool, error) {
 	}
 }
 
+func (c *DbConn) GetSnippets(uid string) ([]string, error) {
+  query, err := SnippetTable.Filter(map[string]interface{}{
+    "owner": uid,
+  }).Field("id").Run(c.Session)
+	if err != nil {
+		return nil, err
+	}
+
+	defer query.Close()
+
+	//Check that a result was found
+	if query.IsNil() {
+		//No results were found
+		return nil, nil
+	} else {
+		var foundSnippets []string
+		err = query.All(&foundSnippets)
+		if err != nil {
+			return nil, err
+		} else {
+			return foundSnippets, nil
+		}
+	}
+}
+
 func (c *DbConn) GetUser(uid string) (*models.User, bool, error) {
 	query, err := UserTable.Get(uid).Run(c.Session)
 	if err != nil {
