@@ -13,9 +13,9 @@ type ProjectContentTemp struct {
 }
 
 type ProjectContent struct {
-  Id     string  `gorethink:"id" bson:"_id,omitempty"`
-  Tracks []Track `gorethink:"tracks" bson:"tracks"`
-  Tempo  float64 `gorethink:"tempo" bson:"tempo"`
+  Id     string   `gorethink:"id" bson:"_id,omitempty"`
+  Tracks []string `gorethink:"tracks" bson:"tracks"`
+  Tempo  int      `gorethink:"tempo" bson:"tempo"`
 }
 
 type Track struct {
@@ -52,8 +52,8 @@ type Error struct {
 
 func NewDefaultProjectContent() ProjectContent {
 	projectContent := ProjectContent{
-		Tracks:[]Track{},
-		Tempo:120,
+		Tracks:[]string{},
+		Tempo:60,
 	}
 	return projectContent
 }

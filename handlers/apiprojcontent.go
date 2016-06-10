@@ -6,6 +6,7 @@ import (
 	"github.com/callummance/apx-srv/events"
 	"github.com/gin-gonic/gin"
         "fmt"
+        "encoding/json"
 )
 
 func getProjectContent(c *gin.Context) {
@@ -21,7 +22,7 @@ func getProjectContent(c *gin.Context) {
 
 }
 
-func modifyProjContent(c *gin.Context, projC *models.ProjectContentTemp) {
+func modifyProjContent(c *gin.Context, projC *models.ProjectContent) *string{
   rdb := db.ReactSession
   oldPID := projC.Id
   c.BindJSON(projC)
@@ -29,24 +30,28 @@ func modifyProjContent(c *gin.Context, projC *models.ProjectContentTemp) {
   modified, err := rdb.ModifyProjectContent(projC)
   if (err != nil) {
     c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    return nil
   } else if (!modified) {
     c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+    return nil
   } else {
     c.Status(201)
+    bs, _ := json.Marshal(projC)
+    s := string(bs)
+    return &s
   }
 
 }
 
 func writeProjectContent(c *gin.Context) {
-	rdb := db.ReactSession
-	pid := c.Param("pid")
-	proj, err := rdb.GetProjectContent(pid)
-	if err != nil {
-  	  c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
-	} else {
-          fmt.Println(proj)
-          modifyProjContent(c, proj)
-          events.UpdateProject(pid, proj.Content)
-	}
-
+  rdb := db.ReactSession
+  pid := c.Param("pid")
+  proj, err := rdb.GetProjectContent(pid)
+  if err != nil {
+    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+  } else {
+    fmt.Println(proj)
+    s := modifyProjContent(c, proj)
+    events.UpdateProject(pid, *s)
+  }
 }

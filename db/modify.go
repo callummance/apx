@@ -58,7 +58,7 @@ func (c *DbConn) GetProject(pid string) (*models.Project, bool, error) {
 }
 
 
-func (c *DbConn) GetProjectContent(pid string) (*models.ProjectContentTemp, error) {
+func (c *DbConn) GetProjectContent(pid string) (*models.ProjectContent, error) {
 	resp, err := ProjectCTable.Get(pid).Run(c.Session)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (c *DbConn) GetProjectContent(pid string) (*models.ProjectContentTemp, erro
 		//No results were found
 		return nil, errors.New("wat")
 	} else {
-		session := models.ProjectContentTemp{}
+		session := models.ProjectContent{}
 		err = resp.One(&session)
 		if err != nil {
 			return nil, err
@@ -83,10 +83,8 @@ func (c *DbConn) GetProjectContent(pid string) (*models.ProjectContentTemp, erro
 func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 	proj := models.NewDefaultProject(me.Id)
 	proj.Id = c.GetUUID()
-        projContent := models.ProjectContentTemp{}
+        projContent := models.NewDefaultProjectContent()
         projContent.Id = proj.Id
-        projContent.Content = `{"tempo": 60,"tracks": []}`
-
 
 	me.Projects = append(me.Projects, proj.Id)
 	found, err := c.ModifyUser(me)
@@ -110,7 +108,7 @@ func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 
 }
 
-func (c *DbConn) ModifyProjectContent(proj *models.ProjectContentTemp) (bool, error) {
+func (c *DbConn) ModifyProjectContent(proj *models.ProjectContent) (bool, error) {
   res, err := ProjectCTable.Get(proj.Id).Update(*proj).RunWrite(c.Session)
   if err != nil {
     return false, err
