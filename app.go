@@ -56,6 +56,7 @@ func main() {
 	router.StaticFS("/node_modules", http.Dir(pageLoc("/node_modules")))
 	router.StaticFile("/js/fblogin.js", pageLoc("/js/fblogin.js"))
 
+
         //API Endpoints
         handlers.ApiHandlers(router)
 

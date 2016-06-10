@@ -33,9 +33,10 @@ type Snippet struct {
   Owner      string   `gorethink:"owner" json:"owners"`
 }
 
-type InstrumentSnippet struct {
+type SnippetContent struct {
   Id  string `gorethink:"id" json:"id"`
-  Content string `gorethink:"content" json:"content"`
+  SoundFile string `gorethink:"soundfile" json:"soundfile"`
+  Notes []string `gorethink:"notes" json:"notes"`
 }
 
 type Note struct {

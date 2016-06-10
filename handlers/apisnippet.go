@@ -7,6 +7,7 @@ import (
 	"github.com/callummance/apx-srv/events"
 	"github.com/gin-gonic/gin"
         "fmt"
+        "encoding/json"
 )
 
 
@@ -142,7 +143,7 @@ func getSnippetContent(c *gin.Context) {
 }
 
 
-func modifySnippetContent(c *gin.Context, snippetC *models.InstrumentSnippet) {
+func modifySnippetContent(c *gin.Context, snippetC *models.SnippetContent) *string{
   rdb := db.ReactSession
   oldSID := snippetC.Id
   c.BindJSON(snippetC)
@@ -150,12 +151,16 @@ func modifySnippetContent(c *gin.Context, snippetC *models.InstrumentSnippet) {
   modified, err := rdb.ModifySnippetContent(snippetC)
   if (err != nil) {
     c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+    return nil
   } else if (!modified) {
     c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+    return nil
   } else {
     c.Status(201)
+    bs, _ := json.Marshal(snippetC)
+    s := string(bs)
+    return &s
   }
-
 }
 
 func writeSnippetContent(c *gin.Context) {
@@ -167,8 +172,9 @@ func writeSnippetContent(c *gin.Context) {
   	  c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
 	} else {
           fmt.Println(snippet)
-          modifySnippetContent(c, snippet)
-          events.UpdateSnippet(sid, snippet.Content)
+          s := modifySnippetContent(c, snippet)
+          if (s != nil) {
+            events.UpdateSnippet(sid, *s)
+          }
 	}
-
 }

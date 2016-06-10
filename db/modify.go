@@ -85,7 +85,7 @@ func (c *DbConn) WriteProject(me *models.User) (*models.Project, error) {
 	proj.Id = c.GetUUID()
         projContent := models.ProjectContentTemp{}
         projContent.Id = proj.Id
-        projContent.Content = ""
+        projContent.Content = `{"tempo": 60,"tracks": []}`
 
 
 	me.Projects = append(me.Projects, proj.Id)
@@ -314,7 +314,7 @@ func (c *DbConn) GetSnippet(sid string) (*models.Snippet, bool, error) {
 }
 
 
-func (c *DbConn) GetSnippetContent(sid string) (*models.InstrumentSnippet, error) {
+func (c *DbConn) GetSnippetContent(sid string) (*models.SnippetContent, error) {
 	resp, err := SnippetCTable.Get(sid).Run(c.Session)
 	if err != nil {
 		return nil, err
@@ -326,7 +326,7 @@ func (c *DbConn) GetSnippetContent(sid string) (*models.InstrumentSnippet, error
 		//No results were found
 		return nil, errors.New("wat")
 	} else {
-		session := models.InstrumentSnippet{}
+		session := models.SnippetContent{}
 		err = resp.One(&session)
 		if err != nil {
 			return nil, err
@@ -339,10 +339,8 @@ func (c *DbConn) GetSnippetContent(sid string) (*models.InstrumentSnippet, error
 func (c *DbConn) WriteSnippet(me *models.User) (*models.Snippet, error) {
 	snippet := models.NewDefaultSnippet(me.Id)
 	snippet.Id = c.GetUUID()
-        snippetContent := models.InstrumentSnippet{}
+        snippetContent := models.SnippetContent{}
         snippetContent.Id = snippet.Id
-        snippetContent.Content = ""
-
 
 
 	resp, err := SnippetTable.Insert(snippet).RunWrite(c.Session)
@@ -359,7 +357,7 @@ func (c *DbConn) WriteSnippet(me *models.User) (*models.Snippet, error) {
 
 }
 
-func (c *DbConn) ModifySnippetContent(snippet *models.InstrumentSnippet) (bool, error) {
+func (c *DbConn) ModifySnippetContent(snippet *models.SnippetContent) (bool, error) {
   res, err := SnippetCTable.Get(snippet.Id).Update(*snippet).RunWrite(c.Session)
   if err != nil {
     return false, err
