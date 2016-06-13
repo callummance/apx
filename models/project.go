@@ -1,29 +1,38 @@
 package models
 
 type Project struct {
-	Id     string   `gorethink:"id" json:"pid"`
+	Id     string   `gorethink:"id" json:"id"`
 	Public bool     `gorethink:"public" json:"public"`
 	Name   string   `gorethink:"name" json:"name"`
 	Owners []string `gorethink:"owner" json:"owners"`
 }
 
 type ProjectContentTemp struct {
-	Id      string `gorethink:"id" json "pid"`
+	Id      string `gorethink:"id" json "id"`
 	Content string `gorethink:"content" json:"content"`
 }
 
 type ProjectContent struct {
-	Id     string   `gorethink:"id" bson:"_id,omitempty"`
-	Tracks []string `gorethink:"tracks" bson:"tracks"`
-	Tempo  int      `gorethink:"tempo" bson:"tempo"`
+	Id     string   `gorethink:"id" json:"id"`
+	Tracks []Track  `gorethink:"tracks" json:"tracks"`
+	Tempo  int      `gorethink:"tempo" json:"tempo"`
 }
 
 type Track struct {
-	Id        string `gorethink:"id" bson:"_id,omitempty"`
-	Volume    int8   `gorethink:"volume"`
-	TrackType string `gorethink:"trackType"`
-	Solo      bool   `gorethink:"solo"`
-	Mute      bool   `gorethink:"mute"`
+	Id        	string `gorethink:"id" json:"id"`
+	Name				string `gorethink:"name" json:"id"`
+	Volume    	int8   `gorethink:"volume" json:"volume"`
+	TrackType 	string `gorethink:"trackType" json:"tracktype"`
+	Solo      	bool   `gorethink:"solo" json:"solo"`
+	Mute      	bool   `gorethink:"mute" json:"mute"`
+	TrackNodes	[][]TrackNode `gorethink:"tracknodes" json:"tracknodes"`
+}
+
+type TrackNode struct {
+	StartTime 	int8 `gorethink:"starttime" json:"starttime"`
+	Duration		int8 `gorethink:"duration" json:"duration"`
+	SnippetId		string `gorethink:"snippetid" json:"snippetid"`
+	SnippetName string `gorethink:"snippetname" json:"snippetname"`
 }
 
 type Snippet struct {
@@ -52,7 +61,7 @@ type Error struct {
 
 func NewDefaultProjectContent() ProjectContent {
 	projectContent := ProjectContent{
-		Tracks: []string{},
+		Tracks: []Track{},
 		Tempo:  60,
 	}
 	return projectContent
