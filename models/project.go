@@ -36,7 +36,7 @@ type Snippet struct {
 type SnippetContent struct {
 	Id        string `gorethink:"id" json:"id"`
 	SoundFile string `gorethink:"soundfile" json:"soundfile"`
-	Notes     []Note `gorethink:"notes" json:"notes"`
+	Notes     [][]Note `gorethink:"notes" json:"notes"`
 }
 
 type Note struct {
