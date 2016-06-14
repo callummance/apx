@@ -39,7 +39,8 @@ type Snippet struct {
 	Id     string `gorethink:"id" json:"id"`
 	Public bool   `gorethink:"public" json:"public"`
 	Name   string `gorethink:"name" json:"name"`
-	Owner  string `gorethink:"owner" json:"owners"`
+	Owner  string `gorethink:"owner" json:"owner"`
+	Duration int8 `gorethink:"duration" json:"duration"`
 }
 
 type SnippetContent struct {
@@ -81,6 +82,7 @@ func NewDefaultSnippet(uid string) Snippet {
 		Public: true,
 		Name:   "untitled",
 		Owner:  uid,
+		Duration: 0,
 	}
 	return snippet
 }
