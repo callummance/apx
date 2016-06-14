@@ -20,7 +20,7 @@ func GetSubP(c *gin.Context) {
 func GetSubS(c *gin.Context) {
   sid := c.Param("sid")
   listener := SubscribeToSnippet(sid)
-  defer UnsubscribeFromProject(sid, listener)
+  defer UnsubscribeFromSnippet(sid, listener)
 
   c.Stream(func(w io.Writer) bool {
     c.SSEvent("update", <-listener)
