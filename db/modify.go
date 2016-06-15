@@ -22,6 +22,30 @@ func (c *DbConn) GetUUID() string {
 	}
 }
 
+func (c *DbConn) SearchUsers(queryStr string, limit int) ([]models.User, error) {
+	query, err := UserTable.Filter(func(user gorethink.Term) gorethink.Term {
+		nameMatches := user.Field("name").Match(queryStr)
+		emailMatches := user.Field("email").Match(queryStr)
+		return gorethink.Or(nameMatches, emailMatches)
+	}).Filter(map[string]interface{}{
+		"private": false,
+	}).Run(c.Session)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer query.Close()
+
+	foundUsers := []models.User{}
+	err = query.All(&foundUsers)
+	if err != nil {
+		return nil, err
+	} else {
+		return foundUsers, nil
+	}
+}
+
 func (c *DbConn) WriteSession(session models.Session) error {
 	resp, err := SessionTable.Insert(session).RunWrite(c.Session)
 	if err != nil {

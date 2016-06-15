@@ -24,6 +24,7 @@ func ApiHandlers(router *gin.Engine) {
 
 	//Handlers for '/user/*' endpoints
 	router.GET("/api/user/:uid", getUser)
+	router.GET("/api/search/user/:query", searchUser)
 	router.GET("/api/user/:uid/*action", func(c *gin.Context) {
 		if c.Param("action") == "projects" {
 			getPublicProj(c)
