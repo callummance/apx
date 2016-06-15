@@ -13,25 +13,25 @@ type ProjectContentTemp struct {
 }
 
 type ProjectContent struct {
-	Id     string   `gorethink:"id" json:"id"`
-	Tracks []Track  `gorethink:"tracks" json:"tracks"`
-	Tempo  int      `gorethink:"tempo" json:"tempo"`
+	Id     string  `gorethink:"id" json:"id"`
+	Tracks []Track `gorethink:"tracks" json:"tracks"`
+	Tempo  int     `gorethink:"tempo" json:"tempo"`
 }
 
 type Track struct {
-	Id        	string `gorethink:"id" json:"id"`
-	Name				string `gorethink:"name" json:"id"`
-	Volume    	int8   `gorethink:"volume" json:"volume"`
-	TrackType 	string `gorethink:"trackType" json:"tracktype"`
-	Solo      	bool   `gorethink:"solo" json:"solo"`
-	Mute      	bool   `gorethink:"mute" json:"mute"`
-	TrackNodes	[][]TrackNode `gorethink:"tracknodes" json:"tracknodes"`
+	Id         string        `gorethink:"id" json:"id"`
+	Name       string        `gorethink:"name" json:"id"`
+	Volume     int8          `gorethink:"volume" json:"volume"`
+	TrackType  string        `gorethink:"trackType" json:"tracktype"`
+	Solo       bool          `gorethink:"solo" json:"solo"`
+	Mute       bool          `gorethink:"mute" json:"mute"`
+	TrackNodes [][]TrackNode `gorethink:"tracknodes" json:"tracknodes"`
 }
 
 type TrackNode struct {
-	StartTime 	int8 `gorethink:"starttime" json:"starttime"`
-	Duration		int8 `gorethink:"duration" json:"duration"`
-	SnippetId		string `gorethink:"snippetid" json:"snippetid"`
+	StartTime   int8   `gorethink:"starttime" json:"starttime"`
+	Duration    int8   `gorethink:"duration" json:"duration"`
+	SnippetId   string `gorethink:"snippetid" json:"snippetid"`
 	SnippetName string `gorethink:"snippetname" json:"snippetname"`
 }
 
@@ -43,8 +43,8 @@ type Snippet struct {
 }
 
 type SnippetContent struct {
-	Id        string `gorethink:"id" json:"id"`
-	SoundFile string `gorethink:"soundfile" json:"soundfile"`
+	Id        string   `gorethink:"id" json:"id"`
+	SoundFile string   `gorethink:"soundfile" json:"soundfile"`
 	Notes     [][]Note `gorethink:"notes" json:"notes"`
 }
 

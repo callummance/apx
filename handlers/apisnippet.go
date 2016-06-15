@@ -1,15 +1,14 @@
 package handlers
 
 import (
-	"github.com/callummance/apx-srv/db"
+	"encoding/json"
+	"fmt"
 	"github.com/callummance/apx-srv/auth"
-	"github.com/callummance/apx-srv/models"
+	"github.com/callummance/apx-srv/db"
 	"github.com/callummance/apx-srv/events"
+	"github.com/callummance/apx-srv/models"
 	"github.com/gin-gonic/gin"
-        "fmt"
-        "encoding/json"
 )
-
 
 func isSnippetPublic(sid string) bool {
 	rdb := db.ReactSession
@@ -25,7 +24,7 @@ func isSnippetPublic(sid string) bool {
 }
 
 func userOwnsSnippet(uid string, snippet *models.Snippet) bool {
-  return snippet.Owner == uid
+	return snippet.Owner == uid
 }
 
 func postNewSnippet(c *gin.Context) {
@@ -54,7 +53,30 @@ func postNewSnippet(c *gin.Context) {
 	}
 }
 
-func getSnippet (c *gin.Context) {
+func delSnippet(c *gin.Context) {
+	rdb := db.ReactSession
+	sid := c.Param("sid")
+	snippet, found, err := rdb.GetSnippet(sid)
+
+	if !found && err == nil {
+		c.String(404, "{\"code\": 2000, \"message\": \"Could not find that snippet\"}")
+	} else if err != nil {
+		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+	} else {
+		uid, _, err := auth.AuthSession(c, rdb)
+		if err != nil {
+			c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+		} else if userOwnsSnippet(uid, snippet) {
+			err = rdb.DeleteSnippet(sid)
+			c.Status(201)
+		} else {
+			c.String(403, `{"code": 3001, "message": "You need to be an owner to delete that snippet"}`)
+		}
+	}
+
+}
+
+func getSnippet(c *gin.Context) {
 	rdb := db.ReactSession
 	sid := c.Param("sid")
 	snippet, found, err := rdb.GetSnippet(sid)
@@ -81,53 +103,51 @@ func getSnippet (c *gin.Context) {
 }
 
 func postSnippetHandler(c *gin.Context, mod string) {
-  rdb := db.ReactSession
+	rdb := db.ReactSession
 
-  //Get the cookie
-  curUser, found, err := auth.AuthSession(c, rdb)
-  if (!found && err != nil) {
-    c.String(401, "{\"code\": 1001, \"message\": \"No session key was provided\"}")
-  } else if (!found) {
-    c.String(403, "{\"code\": 1000, \"message\": \"Could not find that session\"}")
-  } else if (err != nil) {
-    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
-  } else {
-    sid := c.Param("sid")
-    snippet, found, err := rdb.GetSnippet(sid)
+	//Get the cookie
+	curUser, found, err := auth.AuthSession(c, rdb)
+	if !found && err != nil {
+		c.String(401, "{\"code\": 1001, \"message\": \"No session key was provided\"}")
+	} else if !found {
+		c.String(403, "{\"code\": 1000, \"message\": \"Could not find that session\"}")
+	} else if err != nil {
+		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+	} else {
+		sid := c.Param("sid")
+		snippet, found, err := rdb.GetSnippet(sid)
 
-    if !found && err == nil {
-      c.String(404, "{\"code\": 2000, \"message\": \"Could not find that snippet\"}")
-    } else if err != nil {
-      c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
-    } else if (!userOwnsSnippet(curUser, snippet)) {
-      c.String(403, "{\"code\": 2001, \"message\": \"You do not own that snippet\"}")
-    } else if (mod == "/meta"){
-      modifySnippetMeta(c, snippet)
-    } else {
-      fmt.Println(mod)
-    }
-  }
+		if !found && err == nil {
+			c.String(404, "{\"code\": 2000, \"message\": \"Could not find that snippet\"}")
+		} else if err != nil {
+			c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+		} else if !userOwnsSnippet(curUser, snippet) {
+			c.String(403, "{\"code\": 2001, \"message\": \"You do not own that snippet\"}")
+		} else if mod == "/meta" {
+			modifySnippetMeta(c, snippet)
+		} else {
+			fmt.Println(mod)
+		}
+	}
 }
-
 
 func modifySnippetMeta(c *gin.Context, snippet *models.Snippet) {
-  rdb := db.ReactSession
-  oldSID := snippet.Id
-  oldOwner := snippet.Owner
-  c.BindJSON(snippet)
-  snippet.Id = oldSID
-  snippet.Owner = oldOwner
+	rdb := db.ReactSession
+	oldSID := snippet.Id
+	oldOwner := snippet.Owner
+	c.BindJSON(snippet)
+	snippet.Id = oldSID
+	snippet.Owner = oldOwner
 
-  modified, err := rdb.ModifySnippet(snippet)
-  if (err != nil) {
-    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
-  } else if (!modified) {
-    c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
-  } else {
-    c.Status(201)
-  }
+	modified, err := rdb.ModifySnippet(snippet)
+	if err != nil {
+		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+	} else if !modified {
+		c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+	} else {
+		c.Status(201)
+	}
 }
-
 
 func getSnippetContent(c *gin.Context) {
 	rdb := db.ReactSession
@@ -137,30 +157,29 @@ func getSnippetContent(c *gin.Context) {
 	if err != nil {
 		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
 	} else {
-	  c.JSON(201, snippet)
+		c.JSON(201, snippet)
 	}
 
 }
 
-
-func modifySnippetContent(c *gin.Context, snippetC *models.SnippetContent) *string{
-  rdb := db.ReactSession
-  oldSID := snippetC.Id
-  c.BindJSON(snippetC)
-  snippetC.Id = oldSID
-  modified, err := rdb.ModifySnippetContent(snippetC)
-  if (err != nil) {
-    c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
-    return nil
-  } else if (!modified) {
-    c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
-    return nil
-  } else {
-    c.Status(201)
-    bs, _ := json.Marshal(snippetC)
-    s := string(bs)
-    return &s
-  }
+func modifySnippetContent(c *gin.Context, snippetC *models.SnippetContent) *string {
+	rdb := db.ReactSession
+	oldSID := snippetC.Id
+	c.BindJSON(snippetC)
+	snippetC.Id = oldSID
+	modified, err := rdb.ModifySnippetContent(snippetC)
+	if err != nil {
+		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+		return nil
+	} else if !modified {
+		c.String(418, "{\"code\": 0, \"message\": \"User is a teapot.\"}")
+		return nil
+	} else {
+		c.Status(201)
+		bs, _ := json.Marshal(snippetC)
+		s := string(bs)
+		return &s
+	}
 }
 
 func writeSnippetContent(c *gin.Context) {
@@ -168,13 +187,13 @@ func writeSnippetContent(c *gin.Context) {
 	sid := c.Param("sid")
 	snippet, err := rdb.GetSnippetContent(sid)
 	if err != nil {
-          fmt.Println(err)
-  	  c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+		fmt.Println(err)
+		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
 	} else {
-          fmt.Println(snippet)
-          s := modifySnippetContent(c, snippet)
-          if (s != nil) {
-            events.UpdateSnippet(sid, *s)
-          }
+		fmt.Println(snippet)
+		s := modifySnippetContent(c, snippet)
+		if s != nil {
+			events.UpdateSnippet(sid, *s)
+		}
 	}
 }
