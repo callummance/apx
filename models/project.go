@@ -25,6 +25,7 @@ type Track struct {
 	TrackType 	string `gorethink:"trackType" json:"tracktype"`
 	Solo      	bool   `gorethink:"solo" json:"solo"`
 	Mute      	bool   `gorethink:"mute" json:"mute"`
+	Instrument  string `gorethink:"instrument" json:"instrument"`
 	TrackNodes	[]TrackNode `gorethink:"tracknodes" json:"tracknodes"`
 }
 
