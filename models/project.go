@@ -30,9 +30,9 @@ type Track struct {
 }
 
 type TrackNode struct {
-	StartTime 	int8 `gorethink:"starttime" json:"starttime"`
-	Duration		int8 `gorethink:"duration" json:"duration"`
-	SnippetId		string `gorethink:"snippetid" json:"snippetid"`
+	StartTime   int8   `gorethink:"starttime" json:"starttime"`
+	Duration    int8   `gorethink:"duration" json:"duration"`
+	SnippetId   string `gorethink:"snippetid" json:"snippetid"`
 	SnippetName string `gorethink:"snippetname" json:"snippetname"`
 }
 
@@ -45,8 +45,8 @@ type Snippet struct {
 }
 
 type SnippetContent struct {
-	Id        string `gorethink:"id" json:"id"`
-	SoundFile string `gorethink:"soundfile" json:"soundfile"`
+	Id        string   `gorethink:"id" json:"id"`
+	SoundFile string   `gorethink:"soundfile" json:"soundfile"`
 	Notes     [][]Note `gorethink:"notes" json:"notes"`
 }
 

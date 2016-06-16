@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/callummance/apx-srv/db"
 	"github.com/gin-gonic/gin"
 	//"github.com/callummance/apx-srv/auth"
@@ -20,6 +21,18 @@ func getUser(c *gin.Context) {
 	} else {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.JSON(200, target)
+	}
+}
+
+func searchUser(c *gin.Context) {
+	rdb := db.ReactSession
+
+	query := fmt.Sprintf("(?i)%s", c.Param("query"))
+	users, err := rdb.SearchUsers(query, 30)
+	if err != nil {
+		c.String(500, "{\"code\": -1, \"message\": \"An unexpected error occurred\"}")
+	} else {
+		c.JSON(200, users)
 	}
 }
 
